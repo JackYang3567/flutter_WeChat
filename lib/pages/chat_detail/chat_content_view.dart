@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../common/style/style.dart' show AppColors,MessageDetailSelects; //Constants,ICons,
-import '../component/user_avatat.dart';
+import 'package:wechat/common/style/style.dart' show AppColors,MessageDetailSelects; //Constants,ICons,
+import 'package:wechat/pages/component/user_avatat.dart';
 
 class ChatContentView extends StatelessWidget {
   int type; //0 代表对方 ， 1代表自己

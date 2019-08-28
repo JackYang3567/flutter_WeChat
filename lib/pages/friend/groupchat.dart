@@ -30,13 +30,11 @@ class GroupChat extends StatelessWidget {
                     fontFamily: "Courier",
                   ),
                   ),
-         actions: <Widget>[ 
-           
+         actions: <Widget>[            
            IconButton(
               icon: const Icon(Icons.check,color: Colors.green,size: 26.0,),
               onPressed: (){ //_toggleSubmit
-              },
-              
+              },              
             ),  
             Padding(padding: EdgeInsets.only(right: 5),),
         ],                  

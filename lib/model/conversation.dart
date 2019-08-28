@@ -1,6 +1,16 @@
-import '../common/style/style.dart';
-
-
+import 'package:wechat/common/style/style.dart';
+/*
+ "list_id": "52b56649feba14bee0d0f1b62feb60c2",
+            "no_reader_num": 0,
+            "show_name": "hgyg",
+            "last_msg": ":bbbbbbb",
+            "photo_path": "user/4/70.jpg",
+            "time": 1566434835,
+            "top": 0,
+            "top_time": 0,
+            "type": 0
+            */
+   
 class Conversation {
   String avatar;
   String title;
@@ -13,7 +23,7 @@ class Conversation {
   int groupId;
   String userId;
   int type;
-  
+    
   bool isAvatarFromNet() {
     if(this.avatar.indexOf('http') == 0 || this.avatar.indexOf('https') == 0) {
       return true;
@@ -38,6 +48,28 @@ class Conversation {
         assert(updateAt != null);
         
 static  List<Conversation> mockConversations  = [
+   new Conversation(
+       avatar: 'https://randomuser.me/api/portraits/women/57.jpg',
+       title: 'Lily',
+       des: '今天要去运动场锻炼吗？',
+       updateAt: '昨天',
+       isMute: false,
+       unreadMsgCount: 0,
+       groupId: 000000,
+       userId:"000000",
+       type: 0
+     ),
+     new Conversation(
+       avatar: 'http://http.767717.com:881/static/photo/user/4/70.jpg',
+       title: 'hgyg',
+       des: 'bbbbbbb',
+       updateAt: '1566434835',
+       isMute: false,
+       unreadMsgCount: 0,
+       groupId: 000000,
+       userId:"52b56649feba14bee0d0f1b62feb60c2",
+       type: 0
+     ),
     //   new Conversation(
     //   avatar: 'assets/images/ic_file_transfer.png',
     //   title: '[模拟数据]文件传输助手',

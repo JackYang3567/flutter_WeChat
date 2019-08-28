@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:wechat/pages/index_page.dart';
 import 'package:provide/provide.dart';
-import './provide/currentIndex.dart';
-import 'package:wechat/provide/websocket.dart';
-import './common/style/style.dart' show AppColors;
 import 'package:fluro/fluro.dart';
-import './routers/routers.dart';
-import './routers/application.dart';
-import 'package:wechat/pages/sign/signIn.dart';
+
+import 'package:wechat/pages/index_page.dart';
+import 'package:wechat/provide/currentIndex.dart';
+import 'package:wechat/provide/websocket.dart';
+import 'package:wechat/common/style/style.dart' show AppColors;
+import 'package:wechat/routers/routers.dart';
+import 'package:wechat/routers/application.dart';
+
 
 void main() { 
 
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
     Application.router = router;
     Provide.value<WebSocketProvide>(context).init();
     return Container(
-      child:MaterialApp(
+      child: MaterialApp(
         title: '相遇',
         theme: ThemeData.light().copyWith(
           primaryColor: Color(AppColors.PrimaryColor),

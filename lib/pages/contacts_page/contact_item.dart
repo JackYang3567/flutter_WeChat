@@ -2,11 +2,12 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter/material.dart' as prefix1;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../model/contacts.dart';
-import '../../common/style/style.dart';
+import 'package:wechat/model/contacts.dart';
+import 'package:wechat/common/style/style.dart';
 import 'package:wechat/pages/friend/apply_list.dart';
 import 'package:wechat/pages/friend/group_chat_list.dart';
 import 'package:wechat/pages/friend/group_auth.dart';
+import 'package:wechat/pages/details/index.dart';
 
 class ContactItem extends StatelessWidget {
   ContactItem(this.contactItemData,this.isGroupTitle)
@@ -15,36 +16,42 @@ class ContactItem extends StatelessWidget {
   bool isGroupTitle;
   final Contact contactItemData;
 
-  void _loadRoute(context,name){
-     switch(name){
-              case "群聊":
-                  Navigator.push( context,
+  void _handleContactUserIdTap(context,contactItemData){
+      
+     switch(contactItemData.userId){
+              case -1://"群聊":
+                  Navigator.of(context).push(
                           MaterialPageRoute (builder:  ( context) {
                              return GroupChatList();
                         }) 
                     );
                   break;
-               case "群认证":
+               case -2://"群认证":
                   Navigator.push( context,
                           MaterialPageRoute (builder:  ( context) {
                              return GroupAuth();
                         }) 
                     );
                   break;
-               case "新的朋友":
+               case 0://"新的朋友":
                  Navigator.push( context,
                           MaterialPageRoute (builder:  ( context) {
                              return ApplyList();
                         }) 
                     );
-                break;
-
+                   break;
                 default:
-
+                       Navigator.push( context,
+                          MaterialPageRoute (builder:  ( context) {
+                             return ContactIndex(contactItemData: contactItemData);
+                        }) 
+                    );
                   break;
             }
-  }
+           
+  } 
   @override
+  
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
@@ -54,10 +61,12 @@ class ContactItem extends StatelessWidget {
             children: <Widget>[
               avatar(),
               title()
+              
             ],
+            textDirection: TextDirection.ltr,
           ),
           onTap: (){
-           _loadRoute(context,contactItemData.name);
+             _handleContactUserIdTap(context,contactItemData);
           },
         )
       ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../common/style/style.dart' show ICons,AppColors;
+import 'package:wechat/common/style/style.dart' show ICons,AppColors;
 class FullWithIconButton extends StatelessWidget {
   const FullWithIconButton({
     this.title,

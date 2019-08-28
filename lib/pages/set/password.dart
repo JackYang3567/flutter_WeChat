@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 //import 'package:chatapp/services/authentication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+//import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/rendering.dart';
 import 'package:wechat/common/dioHttpSend.dart';
 import 'package:wechat/common/config.dart';
@@ -78,11 +78,8 @@ Future<void> _changPassSuccess(ret) async{
                     };
          
           print(formtData);
-          DioHttpSend.post(url,formtData, _changPassSuccess, failure);
-      
-       }
-        
-    
+          DioHttpSend.post(url,formtData, _changPassSuccess, failure);      
+       }   
   }
 
   @override

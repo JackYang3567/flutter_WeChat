@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
-import './router_handler.dart';
+
+import 'package:wechat/routers/router_handler.dart';
+
 
 class Routers{
   static String root = '/';

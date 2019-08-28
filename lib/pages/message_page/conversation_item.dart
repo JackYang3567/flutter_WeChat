@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../common/style/style.dart' show AppColors,Constants,ICons;
-import '../../model/conversation.dart';
-import '../../routers/application.dart';
+import 'package:wechat/common/style/style.dart' show AppColors,Constants,ICons;
+import 'package:wechat/model/conversation.dart';
+import 'package:wechat/routers/application.dart';
 
 class ConversationItem extends StatelessWidget {
 
@@ -18,8 +18,10 @@ class ConversationItem extends StatelessWidget {
       color: Color(AppColors.ConversationItemBg),
       child: InkWell(
         onTap: (){
-         // print('打开会话:${conversationItemData.title}');
-          Application.router.navigateTo(context, '/chatdetail?index=$index&type=$type');
+          print('打开会话:${conversationItemData.title}');
+          print('打开会话index:${index}');
+          print('打开会话userId:${conversationItemData.userId}');
+          Application.router.navigateTo(context, '/chatdetail?userId=${conversationItemData.userId}&index=${index}&type=${type}');
           
         },
         onTapDown: (TapDownDetails details) {
@@ -27,7 +29,7 @@ class ConversationItem extends StatelessWidget {
         },
         onLongPress: (){
           _showMenu(context,tapPos);
-         // print('弹出会话菜单:${conversationItemData.title}');
+          print('弹出会话菜单:${conversationItemData.title}');
         },
         child: Container(
           height: ScreenUtil().setHeight(120),
@@ -66,7 +68,7 @@ class ConversationItem extends StatelessWidget {
           value: Constants.MENU_DELETE_CONVERSATION,
         ),
       ]
-    ).then<void>((String selected) {
+    ).then<String>((String selected) {
       switch(selected){
         default:
           print('当前选中的是：$selected');

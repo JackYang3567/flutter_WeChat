@@ -30,21 +30,31 @@ class _ContactsPageState extends State<ContactsPage> {
      new Contact(
       avatar: 'assets/images/ic_new_friend.png',
       name: '新的朋友',
-      
+      userId: 0,
+     /* onPressed: (){
+        print('新的朋友');
+      },
+     */ 
     ),
     new Contact(
       avatar: 'assets/images/ic_group_chat.png',
       name: '群聊',
+       userId: -1,
+      /*
       onPressed: (){
         print('群聊');
       },
+      */
     ),
     new Contact(
       avatar: 'assets/images/group-auth.png',
       name: '群认证',
+      userId: -2,
+      /*
       onPressed: (){
         print('群认证');
       },
+      */
     ),
     /*
     new Contact(
@@ -69,6 +79,7 @@ class _ContactsPageState extends State<ContactsPage> {
   @override
   void initState(){
     super.initState();
+     print("init====");
     _contacts..addAll(data)..addAll(data)..addAll(data);
     _contacts.sort((Contact a, Contact b) => a.nameIndex.compareTo(b.nameIndex));
     _scrollController = new ScrollController();

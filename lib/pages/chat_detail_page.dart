@@ -1,40 +1,109 @@
 import 'package:flutter/material.dart';
 import 'package:provide/provide.dart';
-import '../provide/websocket.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wechat/common/dioHttpSend.dart';
+import 'package:wechat/common/config.dart';
+
+import 'package:wechat/provide/websocket.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../common/style/style.dart';
-import './chat_detail/chat_content_view.dart';
-import '../model/conversation.dart';
+import 'package:wechat/common/style/style.dart';
+import 'package:wechat/pages/chat_detail/chat_content_view.dart';
+import 'package:wechat/model/conversation.dart';
 
 
 class ChatDetailPage extends StatefulWidget {
   int type;
   int index;
-  ChatDetailPage(this.index,this.type);
+  String userId;
+  ChatDetailPage(this.index,this.type,this.userId);
   @override
-  _ChatDetailPageState createState() => _ChatDetailPageState(type,index);
+  _ChatDetailPageState createState() => _ChatDetailPageState(type,index,userId);
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
+    Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    String _stateToken;
   ScrollController _scrollController;
   bool hasText = false;
   int type;
   int index;
+  String userId;
   Conversation data;
-  _ChatDetailPageState(this.type,this.index);
-  var messageList = [
-    {'type':0,'text':'hello',},
-    {'type':1,'text':'hello',},
-    {'type':0,'text':'Flutter是谷歌的移动UI框架，可以快速在iOS和Android上构建高质量的原生用户界面。 Flutter可以与现有的代码一起工作。在全世界，Flutter正在被越来越多的开发者和组织使用，并且Flutter是完全免费、开源的。',},
-    {'type':1,'text':'它也是构建未来的Google Fuchsia [1]  应用的主要方式。',},
-    {'type':0,'text':'Flutter是谷歌的移动UI框架 [4]  ，可以快速在iOS和Android上构建高质量的原生用户界面。 Flutter可以与现有的代码一起工作。在全世界，Flutter正在被越来越多的开发者和组织使用，并且Flutter是完全免费、开源的。它也是构建未来的Google Fuchsia [1]  应用的主要方式。',},
-    {'type':1,'text':'Flutter组件采用现代响应式框架构建，这是从React中获得的灵感，中心思想是用组件(widget)构建你的UI。 组件描述了在给定其当前配置和状态时他们显示的样子。当组件状态改变，组件会重构它的描述(description)，Flutter会对比之前的描述， 以确定底层渲染树从当前状态转换到下一个状态所需要的最小更改。',},
-    {'type':0,'text':'Flutter的第一个版本被称为“Sky”，运行在Android操作系统上。它是在2015年Dart开发者峰会 [3]  上亮相的，其目的是能够以每秒120帧的速度持续渲染。',},
-    {'type':1,'text':'runApp函数接收给定的组件(Widget)并使其成为组件树的根。 在此例中，组件树由两个组件构成，Center组件和它的子组件-Text组件。框架强制根组件覆盖整个屏幕，这意味着“Hello, world”文本在屏幕上居中显示。需要注意的是，在上面的Text实例中必须指定文本显示方向。不必担心，当使用MaterialApp时，它会帮你自动解决这些小事情，稍后将进行演示。',},
-    {'type':0,'text':'在编写app时，通常会创建新组件，是继承无状态的StatelessWidget还是有状态的StatefulWidget， 取决于您的组件是否需要管理状态。组件的主要工作是实现一个build函数，它使用其他低级别的组件来构建自己。Flutter框架将依次构建这些组件，最终会到达代表底层渲染对象的组件-RenderObject，它会计算并描述组件的几何形状。',},
-  ];
+  _ChatDetailPageState(this.type,this.index,this.userId);
+
+   
+  
   
   final controller = TextEditingController();
+ 
+  void _jumpBottom(){//滚动到底部
+    _scrollController.animateTo(99999,curve: Curves.easeOut, duration: Duration(milliseconds: 200));
+  }
+
+  @override
+  void initState(){
+    super.initState();
+     _prefs.then((SharedPreferences prefs) {
+            _stateToken = prefs.getString('token');
+            final url ="/im/get/chatData" ;
+            Object formtData =  {
+                      "_agent_id": Config['agent_id'],
+                      "_token": _stateToken,
+                      "is_up":1,
+                      "time" :0,
+                      "list_id": userId
+                  };
+           
+            DioHttpSend.post(url,formtData, _chatDataSuccess, failure);
+     });   
+    _scrollController = new ScrollController();
+   }
+void failure(error) {
+     // print(error);
+  } 
+    var messageList = [];
+  Future<void> _chatDataSuccess(ret ) async{
+      if( ret["err"] ==0){           
+            setState(() {  
+                List chatDataList = ret['data']['list'];                 
+                   chatDataList.forEach((_chat) {
+                     print(_chat);
+                      var content = {};
+                     switch (int.parse(_chat['msg']['type'])) {
+                                   case 0:
+                                      content= { 'text':_chat['msg']['content']['text'],};
+                                     break;
+                                    case 1:
+                                      content= { 'length':_chat['msg']['content']['length'],
+                                                 'url':_chat['msg']['content']['url'],};
+                                     break;
+                                     case 2:
+                                      content= { 'url':_chat['msg']['content']['url'],
+                                                 'w':_chat['msg']['content']['w'],
+                                                 'h':_chat['msg']['content']['h'],
+                                        };
+                                     break; 
+                                     
+                                   default:
+                                     break;
+                                 }
+
+                     var item = {
+                       'user_info': {'uid':_chat['msg']['user_info']['uid'],
+                                     'name':_chat['msg']['user_info']['name'],
+                                     'face':_chat['msg']['user_info']['face'],
+                               },
+                       'content':  content,
+                                 
+                       'type': int.parse(_chat['msg']['type'])
+                     };                      
+                    messageList.add(item);
+                  });                                   
+            });
+      }
+  }
+
   void _handleSubmitted(String text) {
       if (controller.text.length > 0) {
         print('发送$text');
@@ -49,15 +118,19 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         _jumpBottom();
       }
   }
-  void _jumpBottom(){//滚动到底部
-    _scrollController.animateTo(99999,curve: Curves.easeOut, duration: Duration(milliseconds: 200));
-  }
-  @override
-  void initState(){
-    super.initState();
-    _scrollController = new ScrollController();
-    // _jumpBottom();
-  }
+  /*
+  var messageList = [
+    {'type':0,'text':'hello',},
+    {'type':1,'text':'hello',},
+    {'type':0,'text':'Flutter是谷歌的移动UI框架，可以快速在iOS和Android上构建高质量的原生用户界面。 Flutter可以与现有的代码一起工作。在全世界，Flutter正在被越来越多的开发者和组织使用，并且Flutter是完全免费、开源的。',},
+    {'type':1,'text':'它也是构建未来的Google Fuchsia [1]  应用的主要方式。',},
+    {'type':0,'text':'Flutter是谷歌的移动UI框架 [4]  ，可以快速在iOS和Android上构建高质量的原生用户界面。 Flutter可以与现有的代码一起工作。在全世界，Flutter正在被越来越多的开发者和组织使用，并且Flutter是完全免费、开源的。它也是构建未来的Google Fuchsia [1]  应用的主要方式。',},
+    {'type':1,'text':'Flutter组件采用现代响应式框架构建，这是从React中获得的灵感，中心思想是用组件(widget)构建你的UI。 组件描述了在给定其当前配置和状态时他们显示的样子。当组件状态改变，组件会重构它的描述(description)，Flutter会对比之前的描述， 以确定底层渲染树从当前状态转换到下一个状态所需要的最小更改。',},
+    {'type':0,'text':'Flutter的第一个版本被称为“Sky”，运行在Android操作系统上。它是在2015年Dart开发者峰会 [3]  上亮相的，其目的是能够以每秒120帧的速度持续渲染。',},
+    {'type':1,'text':'runApp函数接收给定的组件(Widget)并使其成为组件树的根。 在此例中，组件树由两个组件构成，Center组件和它的子组件-Text组件。框架强制根组件覆盖整个屏幕，这意味着“Hello, world”文本在屏幕上居中显示。需要注意的是，在上面的Text实例中必须指定文本显示方向。不必担心，当使用MaterialApp时，它会帮你自动解决这些小事情，稍后将进行演示。',},
+    {'type':0,'text':'在编写app时，通常会创建新组件，是继承无状态的StatelessWidget还是有状态的StatefulWidget， 取决于您的组件是否需要管理状态。组件的主要工作是实现一个build函数，它使用其他低级别的组件来构建自己。Flutter框架将依次构建这些组件，最终会到达代表底层渲染对象的组件-RenderObject，它会计算并描述组件的几何形状。',},
+  ];
+  */
   @override
   Widget build(BuildContext context) {
     if(type ==1){
@@ -123,7 +196,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     if(type == 1){
                       return ChatContentView(type:list[index]['type'],text:list[index]['text'],avatar:list[index]['type'] == 0 ? data.avatar: '',isNetwork: list[index]['type'] == 0 ? data.isAvatarFromNet() : false,username:list[index]['nickname'],userType:data.type);
                     }else{
-                      return ChatContentView(type:messageList[index]['type'],text:messageList[index]['text'],avatar:messageList[index]['type'] == 0 ? data.avatar: '',isNetwork: messageList[index]['type'] == 0 ? data.isAvatarFromNet() : false,username:data.title,userType:data.type);
+                     // return ChatContentView(type:messageList[index]['type'],text:messageList[index]['text'],avatar:messageList[index]['type'] == 0 ? data.avatar: '',isNetwork: messageList[index]['type'] == 0 ? data.isAvatarFromNet() : false,username:data.title,userType:data.type);
+                      return ChatContentView(type:messageList[index]['type'],text:messageList[index]['content']['text'],avatar:messageList[index]['msg']['type'] == 0 ? data.avatar: '',isNetwork: messageList[index]['msg']['user_info']['face'] == 0 ? data.isAvatarFromNet() : false,username:data.title,userType:data.type);
                     }
                   },
                   itemCount:type == 1 ? list.length : messageList.length ,

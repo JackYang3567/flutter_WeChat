@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/material.dart';
-import 'package:wechat/common/dioHttpSend.dart';
-import 'package:wechat/common/config.dart';
-import 'package:wechat/common/toRootRoute.dart';
+//import 'package:wechat/common/dioHttpSend.dart';
+//import 'package:wechat/common/config.dart';
+//import 'package:wechat/common/toRootRoute.dart';
 //import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:wechat/model/conversation.dart';
 
@@ -21,22 +21,23 @@ class WebSocketProvide with ChangeNotifier{
   var connecting = false;//websocket连接状态
   IOWebSocketChannel channel;
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<void> _loadChatListSuccess(ret) async{
-     SharedPreferences prefs = await _prefs;
+ // Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+ /* Future<void> _loadChatListSuccess(ret) async{
+   //  SharedPreferences prefs = await _prefs;
     if( ret["err"] ==0){
        print("chat_list==: ");
          print(ret['data']);
          //prefs.setStringList("chat_list", messageList);
     }
- }
+ }*/
  void failure(error) {
       print(error);
   } 
   init() async {
+   
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userInfo = prefs.getString('userInfo');
-    final _token = prefs.getString('token');
+    /* final _token = prefs.getString('token');
     //print("_token:"+ _token);
     final url ="/im/get/chatList" ;
     final formtData = {
@@ -44,6 +45,8 @@ class WebSocketProvide with ChangeNotifier{
               "_token": _token
               };
     DioHttpSend.post(url,formtData, _loadChatListSuccess, failure);
+    */
+    
     print(userInfo);
     if(userInfo == null){//弹出设置用户名
       var now = new DateTime.now();
@@ -85,7 +88,7 @@ class WebSocketProvide with ChangeNotifier{
   listenMessage(data){
     connecting = true;
     var obj = jsonDecode(data);
-   // print(data);
+    print(data);
     if(obj['type'] == 1){ // 获取聊天室的人员与群列表
       messageList = [];
       print(obj['msg']);
@@ -174,7 +177,7 @@ class WebSocketProvide with ChangeNotifier{
     channel.sink.add(text);
   }
   onError(error){
-    print('error------------>$error');
+    print("error------------>${error}");
   }
 
   void onDone() {

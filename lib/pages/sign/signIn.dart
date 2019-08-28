@@ -13,7 +13,6 @@ import 'package:flutter/rendering.dart';
 
 import 'package:wechat/pages/sign/signUp.dart';
 import 'package:wechat/common/dioHttpSend.dart';
-
 import 'package:wechat/common/config.dart';
 import 'package:wechat/common/toRootRoute.dart';
 //import '../../../config/httpHeaders.dart';
@@ -73,9 +72,9 @@ class LoginHomePage extends StatefulWidget {
 }
 
 class _LoginHomePageState extends State<LoginHomePage> {
-  FocusNode _focusNode = new FocusNode();
+  //FocusNode _focusNode = new FocusNode();
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<String> _token;
+  //Future<String> _token;
   final _formKey = GlobalKey<FormState>();
   final _userNameTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
@@ -115,16 +114,17 @@ class _LoginHomePageState extends State<LoginHomePage> {
       print(error);
   } 
 
-  
+ Future<String> _token;
  Future<void> _loginSuccess(ret) async{
-   
+    
     final SharedPreferences prefs = await _prefs;
     if( ret["err"] ==0){
         final  String token= ret['data']['token'];
+       
           setState(() {              
-              _token = prefs.setString("token", token).then((bool success) {
+              prefs.setString("token", token).then((bool success) {
                   ToRootRoute.goHome(context);
-                  return token;
+                 return token;
               });
           });
     }

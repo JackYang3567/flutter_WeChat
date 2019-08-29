@@ -17,11 +17,11 @@ class SignUp extends StatelessWidget {
         elevation: .0,
         centerTitle: true,
         title: Text("注册",style: TextStyle(
-                    color: Colors.black,
-                    fontSize: ScreenUtil().setSp(30.0),
-                    height: 1.2,  
-                    fontFamily: "Courier",
-                  ),
+                                  color: Colors.black,
+                                  fontSize: ScreenUtil().setSp(30.0),
+                                  height: 1.2,  
+                                  fontFamily: "Courier",
+                                ),
                   ),
       ),
       body: new SingleChildScrollView(
@@ -56,35 +56,9 @@ class _SignUpPageState extends State<SignUpPage> {
   bool pwdShow = false; //密码是否显示明文
   bool clearText = false; //清除文本
   bool _nameAutoFocus = true;
-/*
-  Future _signupRequest() async {
-    return Future.delayed(Duration(seconds: 3), () {
-      //do nothing
-      print('登录成功');
-    });
-  }
-*/
-
-Future<void> _signinSuccess(ret) async{
-    final SharedPreferences prefs = await _prefs;
-    if( ret["err"] ==0){
-        final  String token= ret['data']['token'];
-          setState(() {              
-              _token = prefs.setString("token", token).then((bool success) {
-                print("===6666===");
-                ToRootRoute.goHome(context);
-                return ;
-              });
-          });
-    }
- }
-  void failure(error) {
-      print(error);
-  } 
 
   void _toggleSubmit() {
      if (_formKey.currentState.validate()) {
-         
           final url ="/im/in/reg" ;
           final formtData =  {
                       "username": _userNameTextController.text, 
@@ -92,7 +66,17 @@ Future<void> _signinSuccess(ret) async{
                       "_agent_id": Config['agent_id'],
                       "_token": ""
                       };
-         DioHttpSend.post(url,formtData, _signinSuccess, failure);
+         DioHttpSend.post(url,params:formtData, success:(ret)async{
+             final SharedPreferences prefs = await _prefs;
+             if( ret["err"] ==0){
+               final  String token= ret['data']['token'];
+                  setState(() {              
+                      prefs.setString("token", token).then((bool success) {
+                           ToRootRoute.goHome(context);
+                        });
+                    });
+              }
+         });
      }
   }
 
@@ -146,8 +130,7 @@ Future<void> _signinSuccess(ret) async{
                       controller: _userNameTextController,
                       decoration: InputDecoration(
                       labelText: '手机号/相遇号(6-16位字母/数字)',
-                      hintText: '请输入手机号/相遇号(6-16位字母/数字)',
-                        
+                      hintText: '请输入手机号/相遇号(6-16位字母/数字)',                        
                       suffixIcon: IconButton(
                          
                           icon: Icon(                           
@@ -172,12 +155,10 @@ Future<void> _signinSuccess(ret) async{
                   ),
                 ],
               ),
-
            
             Padding(
               padding: EdgeInsets.only(top: 20.0),
             ),
-
             Row(
                 children: [
                    Padding(
@@ -194,7 +175,6 @@ Future<void> _signinSuccess(ret) async{
                     //decorationStyle: TextDecorationStyle.dashed
                   ),
                   ),
-
                     Padding(
                      padding: EdgeInsets.fromLTRB(5, 0, 10, 0),
                     ),
@@ -205,10 +185,8 @@ Future<void> _signinSuccess(ret) async{
                        decoration: InputDecoration(
                         labelText: '密码(6-16位)',
                         hintText: '请输入密码(6-16位)',
-                       // prefixIcon: Icon(Icons.lock),
-                       
-                        suffixIcon: IconButton(
-                          
+                       // prefixIcon: Icon(Icons.lock),                       
+                        suffixIcon: IconButton(                          
                           icon: Icon(
                               pwdShow ? Icons.visibility_off : Icons.visibility),
                           onPressed: () {
@@ -226,25 +204,19 @@ Future<void> _signinSuccess(ret) async{
                         }
                          return null;
                       },
-                     
-                      
                     ),
                   ),
                 ],
               ),
-
            
             Padding(
               padding: EdgeInsets.only(top: 30.0),
             ),
-           
-         
                Row(
                 children: [ 
                   Padding(
                     padding: EdgeInsets.only(left: 280.0 ,top:48.0),
                   ),
-                  
                 ]
                ),
             Padding(
@@ -252,18 +224,15 @@ Future<void> _signinSuccess(ret) async{
             ),
             SizedBox(
               width: double.infinity,
-              height: 50.0,
-              
+              height: 50.0,              
               child: RaisedButton(
                 shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                onPressed: _toggleSubmit,
-                
+                onPressed: _toggleSubmit,                
                 child: Text(
                   '注册',
                   style: TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
-                color: Colors.blue,
-             
+                color: Colors.blue,             
               ),
             )
           ],

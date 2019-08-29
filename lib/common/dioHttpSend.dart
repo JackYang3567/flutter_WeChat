@@ -24,7 +24,7 @@ class DioHttpSend {
     return _dio;
   }
 
-  static get(String url, Function successCallBak, Function failure) async {
+  static get(String url, {Function successCallBak, Function failure}) async {
       Dio dio = buildDio();
       try {
           Response<Map> responseMap = await dio.get(url);
@@ -34,7 +34,7 @@ class DioHttpSend {
       }
   }
 
-  static post(String url, params, Function successCallBak, Function failure) async {
+  static post(String url, {params, Function success, Function failure}) async {
       Dio dio = buildDio();
       try {
          Response<Map> responseMap = await dio.post(url, data: params, options: new Options(
@@ -42,7 +42,7 @@ class DioHttpSend {
                 responseType: ResponseType.json
                 )
             );
-        successCallBak(responseMap.data);
+        success(responseMap.data);
       } catch (exception) {
         failure(exception);
       }

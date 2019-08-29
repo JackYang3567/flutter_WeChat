@@ -43,12 +43,10 @@ class _ContactIndexPageState extends State<ContactIndex> {
                       "_token": _stateToken
                   };
                   print(_stateToken);
-            DioHttpSend.post(url,formtData, _userInfoSuccess, failure);
+            DioHttpSend.post(url,params:formtData, success:_userInfoSuccess);
        });   
   }
-  void failure(error) {
-     // print(error);
-  } 
+  
   Widget build(BuildContext context) {
 
    // print(retData);

@@ -19,20 +19,7 @@ import 'package:wechat/common/toRootRoute.dart';
 //import 'package:chatapp/services/authentication.dart';
 
 
-
-void main() {
-  debugPaintSizeEnabled = true;
-  runApp(new SignIn());
-}
- 
-
-
 class SignIn extends StatelessWidget {
-  // This widget is the root of your application.
-  
- // final BaseAuth auth;
-  //final VoidCallback onSignedIn;
-   
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -74,7 +61,6 @@ class LoginHomePage extends StatefulWidget {
 class _LoginHomePageState extends State<LoginHomePage> {
   //FocusNode _focusNode = new FocusNode();
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  //Future<String> _token;
   final _formKey = GlobalKey<FormState>();
   final _userNameTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
@@ -83,62 +69,12 @@ class _LoginHomePageState extends State<LoginHomePage> {
   bool clearText = false; //清除文本
   bool _nameAutoFocus = true;
 
-
-
   @override
   void initState() {
-    
     super.initState();
-    
-      //_focusNode.addListener(_focusNodeListener);
-      // _token = _prefs.then((SharedPreferences prefs) {
-      //   return (prefs.getString('token') ?? null);
-     // });
   }
-/*
-  @override
-    void dispose(){
-        _focusNode.removeListener(_focusNodeListener);  // 页面消失时必须取消这个listener！！
-        super.dispose();
-    }
- 
-    Future<Null> _focusNodeListener() async {  // 用async的方式实现这个listener
-        if (_focusNode.hasFocus){
-            print('TextField got the focus');
-        } else {
-            print('TextField lost the focus');
-        }
-    }
-*/
-  void failure(error) {
-      print(error);
-  } 
-
- Future<String> _token;
- Future<void> _loginSuccess(ret) async{
-    
-    final SharedPreferences prefs = await _prefs;
-    if( ret["err"] ==0){
-        final  String token= ret['data']['token'];
-       
-          setState(() {              
-              prefs.setString("token", token).then((bool success) {
-                  ToRootRoute.goHome(context);
-                 return token;
-              });
-          });
-    }
-    else{
-        String msg = ret['msg'] +'!';
-        ToRootRoute.dialog(context,msg);
-    }
- }
-
- 
-  void _toggleSubmit() {
-        
-     if (_formKey.currentState.validate()) {
-        print("====过关====");
+    void _toggleSubmit() {
+      if (_formKey.currentState.validate()) {
         final url ="/im/in/login" ;
         final formtData =  {
                   "username": _userNameTextController.text, 
@@ -146,12 +82,26 @@ class _LoginHomePageState extends State<LoginHomePage> {
                   "_agent_id": Config['agent_id'],
                   "_token": ""
                   };
-        DioHttpSend.post(url,formtData, _loginSuccess, failure);
-     }
-     else{
-       print("====验证不过关====");
-     }
-            
+           DioHttpSend.post(url,params:formtData, success:(ret)async{
+                final SharedPreferences prefs = await _prefs;
+                  if( ret["err"] ==0){
+                      final  String token= ret['data']['token'];
+                        setState(() {              
+                            prefs.setString("token", token).then((bool success) {
+                                ToRootRoute.goHome(context);
+                            });
+                        });
+                  }
+                  else{
+                      String msg = ret['msg'] +'!';
+                      ToRootRoute.dialog(context,msg);
+                  }
+           });
+        }
+        else{
+        }
+                
+     
   }
 
   @override
@@ -159,8 +109,7 @@ class _LoginHomePageState extends State<LoginHomePage> {
     List<Widget> childrens = [];
     final _mainConatiner = Container(
       padding: EdgeInsets.fromLTRB(10.0,60.0, 10.0, 0),
-      child: Form(
-        
+      child: Form(        
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,8 +136,7 @@ class _LoginHomePageState extends State<LoginHomePage> {
                       '帐号',
                     style: TextStyle(
                     color: Colors.black,
-                    fontSize: 16.0,
-                   
+                    fontSize: 16.0,                   
                     fontFamily: "Courier",
                   ),
                     
@@ -222,16 +170,11 @@ class _LoginHomePageState extends State<LoginHomePage> {
                           return '请输入帐号';
                         }
                         return null;
-                      },
-                      
-                    ),
-
-                    
-                  ),
-                  
+                      },                      
+                    ),                    
+                  ),                  
                 ],
               ),
-
            
             Padding(
               padding: EdgeInsets.only(top: 20.0),
@@ -245,11 +188,10 @@ class _LoginHomePageState extends State<LoginHomePage> {
                   new Text('密码',
                    style: TextStyle(
                     color: Colors.black,
-                    fontSize: 16.0,
-                   
+                    fontSize: 16.0,                   
                     fontFamily: "Courier",
-                   // background: new Paint()..color=Colors.yellow,
-                   // decoration:TextDecoration.underline,
+                    //background: new Paint()..color=Colors.yellow,
+                    //decoration:TextDecoration.underline,
                     //decorationStyle: TextDecorationStyle.dashed
                   ),
                   ),
@@ -265,10 +207,8 @@ class _LoginHomePageState extends State<LoginHomePage> {
                        decoration: InputDecoration(
                         labelText: '请输入密码(6-16位)',
                         hintText: '请输入密码(6-16位)',
-                       // prefixIcon: Icon(Icons.lock),
-                       
-                        suffixIcon: IconButton(
-                          
+                       // prefixIcon: Icon(Icons.lock),                       
+                        suffixIcon: IconButton(                          
                           icon: Icon(
                               pwdShow ? Icons.visibility_off : Icons.visibility),
                           onPressed: () {
@@ -322,8 +262,7 @@ class _LoginHomePageState extends State<LoginHomePage> {
             ),
             SizedBox(
               width: double.infinity,
-              height: 50.0,
-              
+              height: 50.0,              
               child: RaisedButton(
                 shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                 onPressed:  _toggleSubmit ,                
@@ -351,7 +290,6 @@ class _LoginHomePageState extends State<LoginHomePage> {
           ),
         ));
     childrens.add(_mainConatiner);
-
     if (_showLoading) {
       childrens.add(_loadingContainer);
     }

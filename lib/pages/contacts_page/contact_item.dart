@@ -47,7 +47,7 @@ class ContactItem extends StatelessWidget {
                         }) 
                     );
                   break;
-            }
+           }
            
   } 
   @override

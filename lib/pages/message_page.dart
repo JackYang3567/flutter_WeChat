@@ -97,10 +97,9 @@ class _MessagePagePageState extends State<MessagePage> {
                       "_token": _stateToken
                   };
                   print(_stateToken);
-            DioHttpSend.post(url,formtData, _chatListSuccess, failure);
+            DioHttpSend.post(url,params:formtData, success:_chatListSuccess);
      });   
   }
-
   
   void failure(error) {
      // print(error);
@@ -109,12 +108,10 @@ class _MessagePagePageState extends State<MessagePage> {
   
   Widget build(BuildContext context) {
     
-    return Provide<WebSocketProvide>(
+    return  Provide<WebSocketProvide>(
       builder: (context,child,val){
         var messageList = Provide.value<WebSocketProvide>(context).messageList;
-        var length = Conversation.mockConversations.length + 1 + messageList.length;
-
-        
+        var length = Conversation.mockConversations.length + 1 + messageList.length;        
 
         return Container(
           child: ListView.builder(

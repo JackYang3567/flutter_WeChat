@@ -31,9 +31,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   String userId;
   Conversation data;
   _ChatDetailPageState(this.type,this.index,this.userId);
-
-   
-  
   
   final controller = TextEditingController();
  
@@ -55,60 +52,60 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       "list_id": userId
                   };
            
-            DioHttpSend.post(url,formtData, _chatDataSuccess, failure);
+            DioHttpSend.post(url,params:formtData, success:_chatDataSuccess);
      });   
     _scrollController = new ScrollController();
    }
-void failure(error) {
-     // print(error);
-  } 
+
     var messageList = [];
   Future<void> _chatDataSuccess(ret ) async{
       if( ret["err"] ==0){           
             setState(() {  
                 List chatDataList = ret['data']['list'];                 
-                   chatDataList.forEach((_chat) {
-                     print(_chat);
-                      var content = {};
-                     switch (int.parse(_chat['msg']['type'])) {
-                                   case 0:
-                                      content= { 'text':_chat['msg']['content']['text'],};
-                                     break;
+                   chatDataList.forEach((_chat) {                     
+             
+                      var content = {}; 
+                     switch (int.parse(_chat['msg']['type'].toString())) {
+                                    case 0:
+                                       content['text'] = _chat['msg']['content']['text'].toString();
+                                       break;
                                     case 1:
-                                      content= { 'length':_chat['msg']['content']['length'],
-                                                 'url':_chat['msg']['content']['url'],};
+                                        content['length'] =_chat['msg']['content']['length'].toString();
+                                        content['url'] =_chat['msg']['content']['url'].toString();
                                      break;
                                      case 2:
-                                      content= { 'url':_chat['msg']['content']['url'],
-                                                 'w':_chat['msg']['content']['w'],
-                                                 'h':_chat['msg']['content']['h'],
-                                        };
+                                        content['url'] =_chat['msg']['content']['url'].toString();
+                                        content['w'] =int.parse(_chat['msg']['content']['w'].toString());
+                                        content['h'] =int.parse(_chat['msg']['content']['h'].toString());
                                      break; 
                                      
                                    default:
                                      break;
-                                 }
-
-                     var item = {
-                       'user_info': {'uid':_chat['msg']['user_info']['uid'],
-                                     'name':_chat['msg']['user_info']['name'],
-                                     'face':_chat['msg']['user_info']['face'],
-                               },
-                       'content':  content,
-                                 
-                       'type': int.parse(_chat['msg']['type'])
-                     };                      
-                    messageList.add(item);
-                  });                                   
+                       }
+                      
+                    var userInfo = {};             
+                        userInfo['uid'] =_chat['msg']['user_info']['uid'].toString();
+                        userInfo['name'] =_chat['msg']['user_info']['name'].toString();
+                        userInfo['face'] =_chat['msg']['user_info']['face'].toString();                      
+                   
+                     var item = {};
+                       item['user_info'] = userInfo;
+                       item['user_info'] = userInfo;
+                       item['content'] =  content;
+                       item['type'] = int.parse(_chat['msg']['type'].toString());
+                  
+                   messageList.add(item);
+                  });  
+                                              
             });
       }
   }
-
+   
   void _handleSubmitted(String text) {
       if (controller.text.length > 0) {
         print('发送$text');
         if(type == 1){
-          Provide.value<WebSocketProvide>(context).sendMessage(2,text,index);
+           Provide.value<WebSocketProvide>(context).sendMessage(2,text,index);
         }
         setState(() {
           hasText = false;
@@ -133,10 +130,12 @@ void failure(error) {
   */
   @override
   Widget build(BuildContext context) {
+    // data = Provide.value<WebSocketProvide>(context).messageList[index];
     if(type ==1){
+    
       data = Provide.value<WebSocketProvide>(context).messageList[index];
     }else{
-      data = Conversation.mockConversations[index];
+       data = Conversation.mockConversations[index];
     }
     return Scaffold(
       appBar: AppBar(
@@ -166,9 +165,11 @@ void failure(error) {
             Provide<WebSocketProvide>(
               builder: (context,child,val){
                 List<Map<String, Object>>list = [];
+
                 if(type == 1){
+                  
                   messageList = [];
-                  var historyMessage = Provide.value<WebSocketProvide>(context).historyMessage;
+                  var historyMessage =  Provide.value<WebSocketProvide>(context).historyMessage;
                   for(var i = 0; i< historyMessage.length; i++){
                     if(data.userId != null){
                       if(historyMessage[i]['bridge'].contains(data.userId)){
@@ -187,17 +188,36 @@ void failure(error) {
                       }
                     }
                   }
+                }else{
+                 
                 }
                 return Expanded(
                   child: ListView.builder(
                     controller: _scrollController,
                     physics: ClampingScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-                    if(type == 1){
+                    if(type == 1){  // type; //0 代表对方 ， 1代表自己
+                       print('type == 1 ===${type}');
+                     // return ChatContentView(type:list[index]['type'],text:list[index]['text'],avatar:list[index]['type'] == 0 ? data.avatar: '',isNetwork: list[index]['type'] == 0 ? data.isAvatarFromNet() : false,username:list[index]['nickname'],userType:data.type);
                       return ChatContentView(type:list[index]['type'],text:list[index]['text'],avatar:list[index]['type'] == 0 ? data.avatar: '',isNetwork: list[index]['type'] == 0 ? data.isAvatarFromNet() : false,username:list[index]['nickname'],userType:data.type);
                     }else{
+                       
+                                return ChatContentView(type:messageList[index]['type'],text:messageList[index]['content']['text'],
+                                            avatar:messageList[index]['type'] == 0 ? data.avatar: '',
+                                            isNetwork: messageList[index]['type'] == 0 ? data.isAvatarFromNet() : false,
+                                            username:data.title,userType:data.type
+                                            );
+                  
+                          
+                         
                      // return ChatContentView(type:messageList[index]['type'],text:messageList[index]['text'],avatar:messageList[index]['type'] == 0 ? data.avatar: '',isNetwork: messageList[index]['type'] == 0 ? data.isAvatarFromNet() : false,username:data.title,userType:data.type);
-                      return ChatContentView(type:messageList[index]['type'],text:messageList[index]['content']['text'],avatar:messageList[index]['msg']['type'] == 0 ? data.avatar: '',isNetwork: messageList[index]['msg']['user_info']['face'] == 0 ? data.isAvatarFromNet() : false,username:data.title,userType:data.type);
+                    /* return ChatContentView(type:messageList[index]['type'],text:messageList[index]['content']['text'],
+                                            avatar:messageList[index]['type'] == 0 ? data.avatar: '',
+                                            isNetwork: messageList[index]['type'] == 0 ? data.isAvatarFromNet() : false,
+                                            username:data.title,userType:data.type
+                                            );
+                  */
+                     //return ChatContentView(type:messageList[index]['type'],text:messageList[index]['content']['text'],avatar:messageList[index]['msg']['type'] == 0 ? data.avatar: '',isNetwork: messageList[index]['msg']['user_info']['face'] == 0 ? data.isAvatarFromNet() : false,username:data.title,userType:data.type);
                     }
                   },
                   itemCount:type == 1 ? list.length : messageList.length ,

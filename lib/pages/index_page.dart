@@ -111,7 +111,7 @@ class _IndexPage extends State<IndexPage> {
         controller: _pageController,
         itemCount: tabBodies.length,
         onPageChanged: (int index){
-          Provide.value<CurrentIndexProvide>(context).changeIndex(index);
+            Provide.value<CurrentIndexProvide>(context).changeIndex(index);
         },
       );
  }
@@ -286,7 +286,7 @@ class _IndexPage extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     final List<String> _title = ["会话", "通讯录", "游戏", " "];
-    final _pageController = PageController(initialPage: Provide.value<CurrentIndexProvide>(context).currentIndex);
+    final _pageController = PageController(initialPage:  Provide.value<CurrentIndexProvide>(context).currentIndex);
 
     ScreenUtil.instance = ScreenUtil(width: 750,height:1334)..init(context);//初始化屏幕分辨率
 

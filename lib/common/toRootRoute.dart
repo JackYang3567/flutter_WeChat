@@ -1,21 +1,28 @@
 
 import 'package:flutter/material.dart';
-import 'package:wechat/provide/currentIndex.dart';
-import 'package:wechat/pages/index_page.dart';
 import 'package:provide/provide.dart';
 
+import 'package:wechat/pages/index_page.dart';
+import 'package:wechat/provide/currentIndex.dart';
+
+
 class ToRootRoute {
- static PageRouteBuilder _homeRoute = new PageRouteBuilder(
+  
+ static PageRouteBuilder _homeRoute = new PageRouteBuilder(   
    pageBuilder: (BuildContext context, _, __) {
-    Provide.value<CurrentIndexProvide>(context).changeIndex(0);
+     Provide.value<CurrentIndexProvide>(context).changeIndex(0);
      return IndexPage();
    }, 
  );
  
+ //返回首页
  static goHome(context) {
-    return  Navigator.pushAndRemoveUntil(context, _homeRoute, (Route<dynamic> r) => false);
+  
+    return  Navigator.pushAndRemoveUntil(context, _homeRoute,
+            (Route<dynamic> r) => false);
    }
 
+ //对话框
  static dialog(context,msg){
         showDialog(
             context: context,

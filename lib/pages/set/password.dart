@@ -78,7 +78,7 @@ Future<void> _changPassSuccess(ret) async{
                     };
          
           print(formtData);
-          DioHttpSend.post(url,formtData, _changPassSuccess, failure);      
+          DioHttpSend.post(url,params:formtData, success:_changPassSuccess );      
        }   
   }
 
